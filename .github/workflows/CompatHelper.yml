@@ -1,16 +1,23 @@
 name: CompatHelper
+
 on:
   schedule:
-    - cron: 0 0 * * *
-  workflow_dispatch:
+    - cron: '0 0 * * *'  # Ejecuta CompatHelper todos los días a medianoche (UTC)
+  workflow_dispatch:  # Permite ejecutarlo manualmente desde la pestaña "Actions"
+
 jobs:
   CompatHelper:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Pkg.add("CompatHelper")
-        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
-      - name: CompatHelper.main()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia -e 'using CompatHelper; CompatHelper.main()'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run CompatHelper
+        uses: JuliaRegistries/CompatHelper.jl@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Token de GitHub para crear PRs automáticos
+          julia-version: "1.6, 1.7, 1.8, 1.9, 1.10"  # Especifica versiones de Julia compatibles
+          update-extra-dependencies: true  # También actualiza dependencias opcionales ([extras])
+          auto-merge: false  # No hace merge automáticamente, requiere revisión manual
+
