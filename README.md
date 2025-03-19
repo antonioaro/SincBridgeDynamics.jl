@@ -23,8 +23,26 @@ using SincBridgeDynamics
 Example usage:
 
 ```julia
-result = simulate_bridge(parameters)
-println(result)
+# bridge data
+E=3.09e10
+I=8.59
+L=[40.0]
+μ=34610.0
+
+# support conditions
+bc = ["pinned", "pinned"]
+
+# bridge model
+bridge = init_bridge_model(E, I, L, μ, bc)
+
+# lower and upper frequencies
+FREQB = 2.0
+FREQE = 30.0
+
+# modal analysis
+modes = modal(bridge, FREQB, FREQE; maxit=150)
+
+println(modes)
 ```
 
 ## 🛠 Development
